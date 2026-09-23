@@ -8,6 +8,26 @@
  * Every end offset is +1 to get the good size
  */
 
+struct CartridgeHeader {
+    entry_point:        [u8; 4],
+    nintendo_logo:      [u8; 0x30],
+    title:              &str,
+    manufacturer_code:  [u8; 4],
+    cgb_flags:          u8,
+    license_code:       [u8; 2],
+    sgb_flags:          u8,
+    cartridge_type:     CartridgeType,
+    rom_size:           usize,
+    ram_size:           usize,
+    destination_code:   u8,
+    version:            u8,
+}
+
+pub struct Cartridge {
+   rom:     Vec<u8>,
+   header:  CartridgeHeader,
+}
+
 const ENTRY_POINT_OFFSET:   u8 = 0x100;
 const ENTRY_POINT_SIZE:     u8 = (0x103 - 0x100);
 
@@ -304,7 +324,7 @@ const RAM_SIZE_OFFSET: u8           = 0x149;
 
 const DESTRINATION_CODE_OFFSET: u8  = 0x14A;
 
-
+const GAME_START: u8                = 0x150;
 
 
 

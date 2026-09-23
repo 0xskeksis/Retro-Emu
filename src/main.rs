@@ -7,6 +7,5 @@ fn main() {
         println!("{}", HELP_STRING);
         return ;
     }
-
-    check_rom_integrity(env::args[1]);
+    let emulator: Emulator::new();
 }
