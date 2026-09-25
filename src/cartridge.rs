@@ -35,7 +35,7 @@ const LOGO_OFFSET:  u8 = 0x104;
 const LOGO_END:     u8 = 0x134;
 const LOGO_SIZE:    usize = (LOGO_END - LOGO_OFFSET);
 
-const logo: [u8; LOGO_SIZE] [
+const logo: [u8; LOGO_SIZE] = [
 0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
@@ -63,7 +63,7 @@ const CGB_ONLY_VALUE:       u8 = 0xC0;  // CGB only
 
 const LICENSE_CODE_OFFSET:  u8 = 0x144;
 
-const license_code_table: [(&str, &str)] [
+const license_code_table: [(&str, &str)] = [
     ("00", "None"),
     ("01", "Nintendo Research & Development 1"),
     ("08", "Capcom"),
@@ -128,12 +128,12 @@ const license_code_table: [(&str, &str)] [
     ("A4", "Konami (Yu-Gi-Oh!)"),
     ("BL", "MTO"),
     ("DK", "Kodansha"),
-]
+];
 
 // s/\v(\S+)\s+(.+)/("\1", "\2")/  
 // Merci infiniment
 
-const old_license_code_table: [(&str, &str)] [
+const old_license_code_table: [(&str, &str)] = [
     ("00", "None"),
     ("01", "Nintendo"),
     ("08", "Capcom"),
@@ -281,7 +281,7 @@ const old_license_code_table: [(&str, &str)] [
     ("F0", "A Wave"),
     ("F3", "Extreme Entertainment"),
     ("FF", "LJN"),
-]
+];
 
 #[repr(u8)]
 pub enum CartridgeType {
@@ -325,9 +325,3 @@ const RAM_SIZE_OFFSET: u8           = 0x149;
 const DESTRINATION_CODE_OFFSET: u8  = 0x14A;
 
 const GAME_START: u8                = 0x150;
-
-
-
-
-
-

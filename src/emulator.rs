@@ -13,10 +13,12 @@ pub struct Emulator {
 }
 
 impl Emulator {
-    fn new() -> Self {
-       Self {
-        .cpu: Cpu::new(),
-        .Ram: Ram::new(),
+    fn new() -> Self 
+    {
+       Self 
+       {
+        cpu: Cpu::new(),
+        Ram: Ram::new(),
        } 
     }
 

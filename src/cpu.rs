@@ -4,10 +4,14 @@ pub struct Cpu {
 }
 
 impl Cpu {
-    pub fn new() -> Self {
-        registers: Registers::new(),
-        stack: Stack::new(),
-        current_rom: Vec::new(),
+    pub fn new() -> Self 
+    {
+        Self
+        {
+            registers: Registers::new(),
+            stack: Stack::new(),
+            current_rom: Vec::new(),
+        }
     }
     /*
      * A step represent these actions:

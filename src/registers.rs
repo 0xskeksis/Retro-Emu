@@ -20,12 +20,16 @@ pub struct Registers {
 }
 
 impl Registers{
-    pub fn new() -> Registers {
-        af: 0;
-        bc: 0;
-        de: 0;
-        hl: 0;
-        pc: 0x100; // cartridge start
-        sp: 0;
+    pub fn new() -> Self
+    {
+        Self
+        {
+            af: 0,
+            bc: 0,
+            de: 0,
+            hl: 0,
+            pc: 0x100, // cartridge start
+            sp: 0,
+        }
     }
 }
