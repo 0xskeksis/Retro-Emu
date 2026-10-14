@@ -10,6 +10,12 @@ use std::path::Path;
 use crate::core::bus::Bus;
 use crate::core::cpu::Cpu;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Model {
+    Dmg,
+    Cgb,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Emulator
 {

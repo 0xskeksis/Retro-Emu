@@ -8,28 +8,31 @@
  * Every end offset is +1 to get the good size
  */
 
+use crate::core::bus::{Ram, Rom};
+
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CartridgeHeader 
 {
-    entry_point:        [u8; 4],
-    nintendo_logo:      [u8; 0x30],
-    title:              &'static str,
-    manufacturer_code:  [u8; 4],
-    cgb_flags:          u8,
-    license_code:       [u8; 2],
-    sgb_flags:          u8,
-    cartridge_type:     CartridgeType,
-    rom_size:           usize,
-    ram_size:           usize,
-    destination_code:   u8,
-    version:            u8,
+    // entry_point:        [u8; 4],
+    // nintendo_logo:      [u8; 0x30],
+    // title:              &'static str,
+    // manufacturer_code:  [u8; 4],
+    // cgb_flags:          u8,
+    // license_code:       [u8; 2],
+    // sgb_flags:          u8,
+    // cartridge_type:     CartridgeType,
+    // rom_size:           usize,
+    // ram_size:           usize,
+    // destination_code:   u8,
+    // version:            u8,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct Cartridge
 {
-    rom:     Vec<u8>,
+    rom:     Rom,
+    ram:     Ram,
     header:  Option<CartridgeHeader>,
 }
 

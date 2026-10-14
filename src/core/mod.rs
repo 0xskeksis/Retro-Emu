@@ -12,10 +12,13 @@ pub mod cpu {
 pub mod bus {
     automod::dir!("src/core/bus");
     pub use bus::Bus;
-    pub use cartridge::Cartridge;
-    pub use ram::Ram;
+    pub use memory::Memory;
+    pub use memory::Ram;
+    pub use memory::Rom;
+    pub use timer::Timer;
     pub use error::AddressError;
-    pub use error::Result;
+    pub use error::BusResult;
+    pub use cartridge::Cartridge;
 }
 
 
