@@ -1,17 +1,14 @@
-// General idea:
-//
-// let mut emulator = Emulator::new();
-//
-// emulator.load(program);
-// emulator.run();
-
 use std::path::Path;
 
 use crate::core::bus::Bus;
 use crate::core::cpu::Cpu;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Model {
+
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+pub enum Model
+{
+    #[default]
     Dmg,
     Cgb,
 }
@@ -23,14 +20,16 @@ pub struct Emulator
     pub bus: Bus,
 }
 
+
+
 impl Emulator
 {
     pub fn new() -> Self
     {
-       Self {
-        cpu: Cpu::new(),
-        bus: Bus::new(),
-       }
+        Self {
+            cpu: Cpu::new(),
+            bus: Bus::new(Model::default()),
+        }
     }
 
     pub fn load<P: AsRef<Path>>(path: &P)
