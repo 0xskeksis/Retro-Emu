@@ -1,5 +1,3 @@
-use crate::core::{bus::TimerUnit, cpu::Interrupt, ppu::Ppu};
-
 #[derive(Debug, Clone, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Scheduler
 {
@@ -8,33 +6,24 @@ pub struct Scheduler
 
 impl Scheduler
 {
+    pub fn new() -> Self { Default::default() }
+
     pub fn elapsed_tcycles(&self) -> u64 {
         self.elapsed_tcycles
     }
 
     /// Normal-speed scheduling only.
-    pub fn advance_tcycle(&mut self,
-        timer: &mut TimerUnit,
-        ppu: &mut Ppu,
-        interrupts: &mut Interrupt)
+    pub fn advance_tcycle(&mut self)
     {
         self.elapsed_tcycles = self
             .elapsed_tcycles
             .wrapping_add(1);
-
-        if timer.tick_tcycle() {
-            interrupts.request_timer();
-        }
-        ppu.tick_dot();
     }
 
-    pub fn advance_mcycle(&mut self,
-        timer: &mut TimerUnit,
-        ppu: &mut Ppu,
-        interrupts: &mut Interrupt)
+    pub fn advance_mcycle(&mut self)
     {
-        for _ in 0..4 {
-            self.advance_tcycle(timer, ppu, interrupts);
-        }
+        self.elapsed_tcycles = self
+            .elapsed_tcycles
+            .wrapping_add(4);
     }
 }

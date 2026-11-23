@@ -1,22 +1,36 @@
-#[derive(Debug, Clone, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Interrupt
+// Official Game Boy Interrupts Documentation:
+//  - https://gbdev.io/pandocs/Interrupts.html
+
+#[repr(u8)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub enum InterruptKind
 {
-    flags: u8,
+    VBlank = 0,
+    Stat = 1,
+    Timer = 2,
+    Serial = 3,
+    Joypad = 4,
+}
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
+pub struct Interrupts
+{
+    pub ie: u8,  // 0xFFFF
+    pub if_: u8, // 0xFF0F
 }
 
-impl Interrupt {
-    const VALID_BITS: u8 = 0x1F;
-    const TIMER_BIT: u8 = 1 << 2;
+impl Interrupts
+{
+    pub fn new() -> Self { Default::default() }
 
-    pub fn read_if(&self) -> u8 {
-        self.flags | !Self::VALID_BITS
+    pub fn request(&mut self, irq: InterruptKind) {
+        self.if_ |= 1 << irq as u8;
     }
 
-    pub fn write_if(&mut self, value: u8) {
-        self.flags = value & Self::VALID_BITS;
+    pub fn pending(&self) -> u8 {
+        self.ie & self.if_ & 0x1F
     }
 
-    pub(crate) fn request_timer(&mut self) {
-        self.flags |= Self::TIMER_BIT;
+    pub fn acknowledge(&mut self, irq: InterruptKind) {
+        self.if_ &= !(1 << irq as u8);
     }
 }
