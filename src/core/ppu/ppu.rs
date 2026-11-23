@@ -4,7 +4,7 @@ use crate::core::bus::{Oam, Vram};
 pub struct Ppu
 {
     vram: Vram,
-    oam: Oam,
+    oam:  Oam,
     elapsed_dots: u64,
 }
 
@@ -23,8 +23,7 @@ impl Ppu
     pub(crate) fn tick_dot(&mut self) {
         self.elapsed_dots = self
             .elapsed_dots
-            .checked_add(1)
-            .expect("PPU dot counter overflow");
+            .wrapping_add(1);
 
         // TODO: advance rendering state machine.
     }

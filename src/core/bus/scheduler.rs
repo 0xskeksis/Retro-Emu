@@ -20,8 +20,7 @@ impl Scheduler
     {
         self.elapsed_tcycles = self
             .elapsed_tcycles
-            .checked_add(1)
-            .expect("scheduler cycle counter overflow");
+            .wrapping_add(1);
 
         if timer.tick_tcycle() {
             interrupts.request_timer();

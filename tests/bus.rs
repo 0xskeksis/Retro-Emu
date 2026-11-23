@@ -7,7 +7,7 @@ fn accesses_and_internal_cycles_share_the_scheduler() {
 
     bus.read8(0xFF04);
     bus.write8(0xFF06, 0x42);
-    bus.idle_mcycle();
+    bus.advance_mcycle();
 
     assert_eq!(bus.elapsed_tcycles(), 12);
     assert_eq!(bus.elapsed_ppu_dots(), 12);
@@ -22,7 +22,7 @@ fn timer_interrupt_reaches_if() {
     bus.write8(0xFF07, 0b101); // Enable fastest selection
 
     for _ in 0..5 {
-        bus.idle_mcycle();
+        bus.advance_mcycle();
     }
 
     assert_ne!(bus.mapped_read(0xFF0F) & 0b100, 0);

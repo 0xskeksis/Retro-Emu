@@ -15,16 +15,12 @@ pub struct Bus
     interrupts: Interrupt,
 }
 
-impl Bus {
-    /// Normal-speed operation; no boot-ROM state is applied.
+impl Bus
+{
     pub fn new(model: Model) -> Self
     {
-        Self::with_timer(TimerUnit::new(model))
-    }
-
-    pub fn with_timer(timer: TimerUnit) -> Self {
         Self {
-            timer,
+            timer: TimerUnit::new(model),
             cart: Cartridge::new(),
             ram: Ram::new(),
             ppu: Ppu::new(),
@@ -33,12 +29,23 @@ impl Bus {
         }
     }
 
-    pub fn elapsed_tcycles(&self) -> u64 {
-        self.scheduler.elapsed_tcycles()
+    pub fn elapsed_tcycles(&self)  -> u64 {
+        self.scheduler.elapsed_tcycles() 
     }
-
     pub fn elapsed_ppu_dots(&self) -> u64 {
         self.ppu.elapsed_dots()
+    }
+
+    /// CPU internal cycle: time passes without a memory access.
+    ///
+    /// Also usable for an appropriate HALT execution path.
+    /// STOP requires separate handling.
+    fn advance_mcycle(&mut self) {
+        self.scheduler.advance_mcycle(
+            &mut self.timer,
+            &mut self.ppu,
+            &mut self.interrupts,
+        );
     }
 
     /// A CPU read, including its time cost.
@@ -51,22 +58,6 @@ impl Bus {
     pub fn write8(&mut self, address: u16, value: u8) {
         self.advance_mcycle();
         self.mapped_write(address, value);
-    }
-
-    /// CPU internal cycle: time passes without a memory access.
-    ///
-    /// Also usable for an appropriate HALT execution path.
-    /// STOP requires separate handling.
-    pub fn idle_mcycle(&mut self) {
-        self.advance_mcycle();
-    }
-
-    fn advance_mcycle(&mut self) {
-        self.scheduler.advance_mcycle(
-            &mut self.timer,
-            &mut self.ppu,
-            &mut self.interrupts,
-        );
     }
 
     /// Address routing only: does not advance time.

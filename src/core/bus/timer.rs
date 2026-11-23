@@ -1,3 +1,5 @@
+use thiserror::Error;
+
 use crate::core::Model;
 
 //
@@ -14,8 +16,12 @@ pub enum Register
     Tac = 0xFF07,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct InvalidTimerRegister(pub u16);
+#[derive(Error, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum TimerError
+{
+    #[error("Invalid timer register: {0:#06X}")]
+    InvalidRegister(u16),
+}
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Control(u8);
@@ -219,14 +225,6 @@ impl TimerUnit
         }
     }
 }
-
-
-impl std::fmt::Display for InvalidTimerRegister {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "invalid timer register: {:#06X}", self.0)
-    }
-}
-impl std::error::Error for InvalidTimerRegister {}
 
 
 #[cfg(test)]
