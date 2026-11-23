@@ -13,18 +13,6 @@
 pub type Register = u16;
 
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct Registers 
-{
-    pub af: Register,
-    pub bc: Register,
-    pub de: Register,
-    pub hl: Register,
-    pub pc: Register,
-    pub sp: Register,
-}
-
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(u16)]
 pub enum Flag {
@@ -77,16 +65,5 @@ impl RegisterHiLo for Register
     }
     fn set_lo(&mut self, value: u8) {
         *self = (*self & 0xFF00) | (value as u16);
-    }
-}
-
-
-impl Registers
-{
-    pub fn new() -> Self {
-        Self {
-            pc: 0x100, // cartridge start
-            ..Default::default()
-        }
     }
 }
