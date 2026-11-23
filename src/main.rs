@@ -1,4 +1,9 @@
+mod core;
+
 use std::env;
+
+use crate::core::emulator::Emulator;
+
 
 const HELP_STRING: &str = "Usage: cargo run -- <ROM>";
 
@@ -7,5 +12,5 @@ fn main() {
         println!("{}", HELP_STRING);
         return ;
     }
-    let emulator: Emulator::new();
+    let _emulator = Emulator::new();
 }
