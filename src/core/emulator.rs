@@ -5,7 +5,7 @@ use crate::core::cpu::Cpu;
 use crate::core::io::Clock;
 use crate::core::mem::{BusView, Hram, Ram, Result};
 use crate::core::ppu::Ppu;
-use crate::core::sys::{Interrupts, Scheduler};
+use crate::core::sys::{IrqCtrl, Scheduler};
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -18,7 +18,7 @@ pub struct Emulator
     timer: Clock,
     cart:  Cartridge,
     sched: Scheduler,
-    inter: Interrupts,
+    inter: IrqCtrl,
 }
 
 impl Emulator
@@ -33,7 +33,7 @@ impl Emulator
             timer: Clock::new(),
             cart:  Cartridge::new(),
             sched: Scheduler::new(),
-            inter: Interrupts::new(),
+            inter: IrqCtrl::new(),
         }
     }
 

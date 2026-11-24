@@ -1,4 +1,3 @@
-use crate::core::Model;
 use super::BusView;
 
 #[test]

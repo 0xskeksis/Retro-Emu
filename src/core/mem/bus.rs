@@ -2,7 +2,7 @@ use crate::core::mem::{AddressError, Hram, Ram, Result};
 use crate::core::sys::Scheduler;
 use crate::core::ppu::Ppu;
 use crate::core::cart::Cartridge;
-use crate::core::sys::Interrupts;
+use crate::core::sys::{Irq, IrqSet, IrqCtrl};
 use crate::core::io::Clock;
 
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -13,7 +13,7 @@ pub struct BusView<'a>
         pub hram:  &'a mut Hram,
         pub cart:  &'a mut Cartridge,
         pub sched: &'a mut Scheduler,
-        pub inter: &'a mut Interrupts,
+        pub inter: &'a mut IrqCtrl,
         pub timer: &'a mut Clock,
 }
 
