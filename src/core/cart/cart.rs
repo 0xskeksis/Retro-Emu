@@ -116,29 +116,23 @@ impl Cartridge
 {
     pub fn new() -> Self { Default::default() }
 
-    pub fn read_rom(&self, addr: u16) -> Result<u8>
-    {
-        self.rom.read(addr)
-    }
+    pub fn rom(&self) -> &Rom { &self.rom }
 
-    pub fn read_ext_rom(&self, addr: u16) -> Result<u8>
-    {
+    pub fn read_ext_rom(&self, addr: u16) -> Result<u8> {
         match &self.ext_rom {
             Some(rom) => rom.read(addr),
             None      => Err(AddressError::OutOfBounds(addr)),
         }
     }
 
-    pub fn read_ext_ram(&self, addr: u16) -> Result<u8>
-    {
+    pub fn read_ext_ram(&self, addr: u16) -> Result<u8> {
         match &self.ext_ram {
             Some(ram) => ram.read(addr),
             None      => Err(AddressError::OutOfBounds(addr)),
         }
     }
 
-    pub fn write_ext_ram(&mut self, addr: u16, value: u8) -> Result<()>
-    {
+    pub fn write_ext_ram(&mut self, addr: u16, value: u8) -> Result<()> {
         match &mut self.ext_ram {
             Some(ram) => ram.write(addr, value),
             None      => Err(AddressError::OutOfBounds(addr)),

@@ -1,4 +1,4 @@
-use crate::core::mem::{Ram, Result, AddressError};
+use crate::core::mem::{AddressError, Hram, Ram, Result};
 use crate::core::sys::Scheduler;
 use crate::core::ppu::Ppu;
 use crate::core::cart::Cartridge;
@@ -10,6 +10,7 @@ pub struct BusView<'a>
 {
         pub ppu:   &'a mut Ppu,
         pub ram:   &'a mut Ram,
+        pub hram:  &'a mut Hram,
         pub cart:  &'a mut Cartridge,
         pub sched: &'a mut Scheduler,
         pub inter: &'a mut Interrupts,
@@ -66,35 +67,35 @@ impl BusView<'_>
 
     /// Address routing only: does not advance time.
     fn mapped_read(&self, addr: u16) ->  Result<u8> {
-        // TODO: : WRAM, HRAM, I/O, Interrupts
+        // TODO: : I/O, Interrupts
         match addr {
-            0x0000..=0x3FFF => {self.cart.read_rom(addr)},       // 16 KiB ROM, Cartridge fixed bank
-            0x4000..=0x7FFF => {self.cart.read_ext_rom(addr)},   // 16 KiB ROM, Cartridge switchable bank (if any)
-            0x8000..=0x9FFF => {self.ppu.vram().read(addr)},     // 8 KiB VRAM, In CGB, switchable bank
-            0xA000..=0xBFFF => {self.cart.read_ext_ram(addr)},   // 8 KiB RAM,  In CGB, Cartridge extern switchable bank (if any)
-            0xC000..=0xCFFF => {Err(AddressError::Other(addr))}, // 4 KiB WRAM
-            0xD000..=0xDFFF => {Err(AddressError::Other(addr))}, // 4 KiB WRAM, In CGB, switchable bank
-            0xFE00..=0xFE9F => {self.ppu.oam().read(addr) },     // 160B Sprite attribute table (OAM)
-            0xFF00..=0xFF7F => {Err(AddressError::Other(addr))}, // I/O Ports
-            0xFF80..=0xFFFE => {Err(AddressError::Other(addr))}, // High RAM (HRAM)
-            0xFFFF          => {Err(AddressError::Other(addr))}, // Interrupt Enable Register
-            _ => Err(AddressError::Invalid(addr)),
+            0x0000..=0x3FFF => { self.cart.rom().read(addr)     }, // 16 KiB ROM, Cartridge fixed bank
+            0x4000..=0x7FFF => { self.cart.read_ext_rom(addr)   }, // 16 KiB ROM, Cartridge switchable bank (if any)
+            0x8000..=0x9FFF => { self.ppu.vram().read(addr)     }, // 8 KiB VRAM, In CGB, switchable bank
+            0xA000..=0xBFFF => { self.cart.read_ext_ram(addr)   }, // 8 KiB RAM, In CGB, Cartridge extern switchable bank (if any)
+            0xC000..=0xCFFF => { self.ram.read(addr)            }, // 4 KiB WRAM
+            0xD000..=0xDFFF => { self.ram.read(addr)            }, // 4 KiB WRAM, In CGB, switchable bank
+            0xFE00..=0xFE9F => { self.ppu.oam().read(addr)      }, // 160B Sprite attribute table (OAM)
+            0xFF00..=0xFF7F => { Err(AddressError::Other(addr)) }, // I/O Ports
+            0xFF80..=0xFFFE => { self.hram.read(addr)           }, // High RAM (HRAM)
+            0xFFFF          => { Err(AddressError::Other(addr)) }, // Interrupt Enable Register
+            _ => Err(AddressError::Invalid(addr)),                 // 0xFEA0..=0xFEFF & E000..=FDFF are unusable
         }
     }
 
     /// Address routing only: does not advance time.
     fn mapped_write(&mut self, addr: u16, val: u8) -> Result<()> {
-        // TODO: : WRAM, HRAM, I/O, Interrupts
+        // TODO: : I/O, Interrupts
         match addr {
-            0x0000..=0x7FFF => {Err(AddressError::ReadOnly(addr))},    // 32 KiB ROM fixed bank + switchable bank
-            0x8000..=0x9FFF => {self.ppu.vram_mut().write(addr, val)}, // 8 KiB Video RAM (VRAM) In CGB mode, switchable bank 0/1
-            0xA000..=0xBFFF => {self.cart.write_ext_ram(addr, val)},   // 8 KiB External RAM In CGB mode,
-            0xC000..=0xCFFF => {Err(AddressError::Other(addr))},       // 4 KiB Work RAM (WRAM) Bank 0
-            0xD000..=0xDFFF => {Err(AddressError::Other(addr))},       // 4 KiB Work RAM (WRAM) In CGB, switchable bank
-            0xFE00..=0xFE9F => {self.ppu.oam_mut().write(addr, val)}, // Sprite attribute table (OAM)
-            0xFF00..=0xFF7F => {Err(AddressError::Other(addr))}, // I/O Ports
-            0xFF80..=0xFFFE => {Err(AddressError::Other(addr))}, // High RAM (HRAM)
-            0xFFFF          => {Err(AddressError::Other(addr))}, // Interrupt Enable Register
+            0x0000..=0x7FFF => { Err(AddressError::ReadOnly(addr))    },
+            0x8000..=0x9FFF => { self.ppu.vram_mut().write(addr, val) },
+            0xA000..=0xBFFF => { self.cart.write_ext_ram(addr, val)   },
+            0xC000..=0xCFFF => { self.ram.write(addr, val)            },
+            0xD000..=0xDFFF => { self.ram.write(addr, val)            },
+            0xFE00..=0xFE9F => { self.ppu.oam_mut().write(addr, val)  },
+            0xFF00..=0xFF7F => { Err(AddressError::Other(addr))       },
+            0xFF80..=0xFFFE => { self.hram.write(addr, val)           },
+            0xFFFF          => { Err(AddressError::Other(addr))       },
             _ => Err(AddressError::Invalid(addr)),
         }
     }

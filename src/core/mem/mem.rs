@@ -1,9 +1,12 @@
 use thiserror::Error;
 
-const RAM_SIZE: usize = 0x10000; // 64KB of RAM
-const ROM_SIZE: usize = 0x8000;  // 32KB of ROM
-const VRAM_SIZE: usize = 0x2000; // 8KB of VRAM
-const OAM_SIZE: usize = 0xA0;    // 160 bytes of OAM (Object Attribute Memory)
+const ROM_SIZE: usize = 0x8000; // 32KB of ROM
+const RAM_SIZE: usize = 0x2000; // 8KB of RAM
+
+const VRAM_SIZE: usize = 0x2000;// 8KB of VRAM
+const OAM_SIZE: usize = 0xA0;   // 160 bytes of OAM
+
+const HRAM_SIZE: usize = 0x7F;  // 127 bytes of High RAM (HRAM)
 
 //
 // ╔═════════════════════════[ DEFINITION ]═════════════════════════╗
@@ -37,6 +40,7 @@ pub type Ram = Memory<RAM_SIZE, false>;
 pub type Rom = Memory<ROM_SIZE, true>;
 pub type Vram = Memory<VRAM_SIZE, false>;
 pub type Oam = Memory<OAM_SIZE, false>;
+pub type Hram = Memory<HRAM_SIZE, false>;
 
 //
 // ╔═════════════════════════[ PUBLIC API ]═════════════════════════╗

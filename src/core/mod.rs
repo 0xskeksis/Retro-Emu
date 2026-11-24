@@ -21,7 +21,7 @@ pub mod io
 pub mod mem
 {
     automod::dir!("src/core/mem");
-    pub use mem::{Memory, Ram, Rom, Vram, Oam, Result, AddressError};
+    pub use mem::{Memory, Ram, Rom, Vram, Oam, Result, AddressError, Hram};
     pub use bus::{Bus, BusView};
 }
 pub mod sys

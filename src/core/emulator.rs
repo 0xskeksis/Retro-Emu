@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::core::cart::Cartridge;
 use crate::core::cpu::Cpu;
 use crate::core::io::Clock;
-use crate::core::mem::{Ram, Result, BusView};
+use crate::core::mem::{BusView, Hram, Ram, Result};
 use crate::core::ppu::Ppu;
 use crate::core::sys::{Interrupts, Scheduler};
 
@@ -14,6 +14,7 @@ pub struct Emulator
     cpu:   Cpu,
     ppu:   Ppu,
     ram:   Ram,
+    hram:  Hram,
     timer: Clock,
     cart:  Cartridge,
     sched: Scheduler,
@@ -28,6 +29,7 @@ impl Emulator
             cpu:   Cpu::new(),
             ppu:   Ppu::new(),
             ram:   Ram::new(),
+            hram:  Hram::new(),
             timer: Clock::new(),
             cart:  Cartridge::new(),
             sched: Scheduler::new(),
@@ -48,6 +50,7 @@ impl Emulator
         let mut bus = BusView {
             ppu:   &mut self.ppu,
             ram:   &mut self.ram,
+            hram:  &mut self.hram,
             cart:  &mut self.cart,
             timer: &mut self.timer,
             sched: &mut self.sched,
