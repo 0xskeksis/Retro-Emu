@@ -1,7 +1,9 @@
-use crate::core::bus::scheduler::Scheduler;
-use crate::core::bus::{Cartridge, Ram, Timer, Result, AddressError};
-use crate::core::cpu::Interrupts;
+use crate::core::mem::{Ram, Result, AddressError};
+use crate::core::sys::Scheduler;
 use crate::core::ppu::Ppu;
+use crate::core::cart::Cartridge;
+use crate::core::sys::Interrupts;
+use crate::core::io::Timer;
 
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct BusView<'a>

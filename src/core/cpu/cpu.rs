@@ -1,5 +1,5 @@
-use crate::core::bus::{Bus, Result};
-use crate::core::cpu::{Interrupts, Register};
+use crate::core::cpu::Register;
+use crate::core::mem::{Result, Bus};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct Cpu

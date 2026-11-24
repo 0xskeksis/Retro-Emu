@@ -8,8 +8,15 @@
  * Every end offset is +1 to get the good size
  */
 
-use crate::core::bus::{Ram, Rom};
+use crate::core::mem::{Ram, Rom};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+pub enum Model
+{
+    #[default]
+    Dmg,
+    Cgb,
+}
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CartridgeHeader 
