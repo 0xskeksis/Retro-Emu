@@ -3,23 +3,23 @@
 
 use super::*;
 use super::Register as R;
-use super::Timer;
+use super::Clock;
 
-fn advance(timer: &mut Timer, cycles: usize) -> usize {
+fn advance(timer: &mut Clock, cycles: usize) -> usize {
     (0..cycles)
         .filter(|_| timer.tick_tcycle())
         .count()
 }
 
-fn fast_timer() -> Timer {
-    let mut timer = Timer::new();
+fn fast_timer() -> Clock {
+    let mut timer = Clock::new();
     timer.write(R::Tac, 0b101);
     timer
 }
 
 #[test]
 fn div_exposes_the_upper_byte() {
-    let mut timer = Timer::new();
+    let mut timer = Clock::new();
 
     advance(&mut timer, 255);
     assert_eq!(timer.read(R::Div), 0);
@@ -36,7 +36,7 @@ fn selected_clock_controls_the_increment_period() {
         (0b10, 64),
         (0b11, 256),
     ] {
-        let mut timer = Timer::new();
+        let mut timer = Clock::new();
         timer.write(R::Tac, 0b100 | selection);
 
         advance(&mut timer, period - 1);

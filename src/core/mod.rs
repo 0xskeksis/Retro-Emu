@@ -27,7 +27,7 @@ pub mod mem
 pub mod sys
 {
     automod::dir!("src/core/sys");
-    pub use irq::Interrupts;
+    pub use irq::{Irq, IrqSet, IrqCtrl};
     pub use sched::Scheduler;
 }
 pub mod ppu {
