@@ -8,7 +8,7 @@
  * Every end offset is +1 to get the good size
  */
 
-use crate::core::mem::{Ram, Rom};
+use crate::core::mem::{Ram, Rom, Result, AddressError};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
 pub enum Model
@@ -19,7 +19,7 @@ pub enum Model
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub struct CartridgeHeader 
+pub struct CartridgeHeader
 {
     // entry_point:        [u8; 4],
     // nintendo_logo:      [u8; 0x30],
@@ -39,7 +39,8 @@ pub struct CartridgeHeader
 pub struct Cartridge
 {
     rom:     Rom,
-    ram:     Ram,
+    ext_rom: Option<Rom>,
+    ext_ram: Option<Ram>,
     header:  Option<CartridgeHeader>,
 }
 
@@ -114,4 +115,33 @@ pub enum CartridgeType {
 impl Cartridge
 {
     pub fn new() -> Self { Default::default() }
+
+    pub fn read_rom(&self, addr: u16) -> Result<u8>
+    {
+        self.rom.read(addr)
+    }
+
+    pub fn read_ext_rom(&self, addr: u16) -> Result<u8>
+    {
+        match &self.ext_rom {
+            Some(rom) => rom.read(addr),
+            None      => Err(AddressError::OutOfBounds(addr)),
+        }
+    }
+
+    pub fn read_ext_ram(&self, addr: u16) -> Result<u8>
+    {
+        match &self.ext_ram {
+            Some(ram) => ram.read(addr),
+            None      => Err(AddressError::OutOfBounds(addr)),
+        }
+    }
+
+    pub fn write_ext_ram(&mut self, addr: u16, value: u8) -> Result<()>
+    {
+        match &mut self.ext_ram {
+            Some(ram) => ram.write(addr, value),
+            None      => Err(AddressError::OutOfBounds(addr)),
+        }
+    }
 }

@@ -16,7 +16,7 @@ pub mod cart
 pub mod io
 {
     automod::dir!("src/core/io");
-    pub use timer::Timer;
+    pub use clock::Clock;
 }
 pub mod mem
 {

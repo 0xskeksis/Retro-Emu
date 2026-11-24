@@ -15,7 +15,7 @@ pub enum Register
 }
 
 #[derive(Error, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub enum TimerError
+pub enum ClockError
 {
     #[error("Invalid timer register: {0:#06X}")]
     InvalidRegister(u16),
@@ -32,7 +32,7 @@ enum StateMachine
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct Timer
+pub struct Clock
 {
     div: u16,
     tima: u8,
@@ -46,7 +46,7 @@ pub struct Timer
 // ╔═════════════════════════[ PUBLIC API ]═════════════════════════╗
 //
 
-impl Timer
+impl Clock
 {
     /// Zero-initialized state, not a post-boot snapshot.
     pub fn new() -> Self { Default::default() }
@@ -88,7 +88,7 @@ impl Timer
 //
 
 impl TryFrom<u16> for Register {
-    type Error = TimerError;
+    type Error = ClockError;
 
     fn try_from(address: u16) -> Result<Self, Self::Error> {
         match address {
@@ -96,7 +96,7 @@ impl TryFrom<u16> for Register {
             a if a == Self::Tima as u16 => Ok(Self::Tima),
             a if a == Self::Tma as u16 => Ok(Self::Tma),
             a if a == Self::Tac as u16 => Ok(Self::Tac),
-            _ => Err(TimerError::InvalidRegister(address)),
+            _ => Err(ClockError::InvalidRegister(address)),
         }
     }
 }
@@ -123,7 +123,7 @@ impl StateMachine
 }
 
 
-impl Timer
+impl Clock
 {
     fn write_div(&mut self, div: u16) {
         let enabled = self.tac & 0b100 != 0;
