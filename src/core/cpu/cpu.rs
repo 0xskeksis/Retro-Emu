@@ -1,20 +1,21 @@
 use crate::core::cpu::Register;
-use crate::core::mem::{Result, Bus};
+use crate::core::mem::{Bus, Result};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
-pub struct Cpu
-{
-    pub af: Register,
-    pub bc: Register,
-    pub de: Register,
-    pub hl: Register,
-    pub pc: Register,
-    pub sp: Register,
+pub struct Cpu {
+    pub af: u16,
+    pub bc: u16,
+    pub de: u16,
+    pub hl: u16,
+    pub pc: u16,
+    pub sp: u16,
+    pub ime: u16,
 }
 
-impl Cpu
-{
-    pub fn new() -> Self { Default::default() }
+impl Cpu {
+    pub fn new() -> Self {
+        Default::default()
+    }
 
     /*
      * A step represent these actions:
@@ -25,8 +26,7 @@ impl Cpu
      * Exemple idea: while(!interrupt) {cpu.step()}
      *
      */
-    pub fn step<B: Bus>(&mut self, bus: &mut B) -> Result<()>
-    {
+    pub fn step<B: Bus>(&mut self, bus: &mut B) -> Result<()> {
         // if self.ime && bus.pending_interrupts() != 0 {
         //     self.service_interrupt(bus);
         //     return;
@@ -50,6 +50,7 @@ impl Cpu
     fn fetch<B: Bus>(&mut self, bus: &mut B) -> Result<u8> {
         let byte = bus.read(self.pc);
         self.pc = self.pc.wrapping_add(1);
+        self.pc.get_hi();
         byte
     }
 }
