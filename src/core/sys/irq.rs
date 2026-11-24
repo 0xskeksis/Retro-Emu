@@ -31,6 +31,6 @@ impl Interrupts
     }
 
     pub fn acknowledge(&mut self, irq: InterruptKind) {
-        self.if_ &= !(1 << irq as u8);
+
     }
 }

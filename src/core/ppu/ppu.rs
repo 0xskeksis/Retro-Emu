@@ -1,4 +1,4 @@
-use crate::core::bus::{Oam, Vram};
+use crate::core::mem::{Oam, Vram};
 
 #[derive(Debug, Clone, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Ppu

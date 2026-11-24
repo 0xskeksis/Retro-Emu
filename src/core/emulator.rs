@@ -1,18 +1,12 @@
 use std::path::Path;
 
-use crate::core::bus::{BusView, Cartridge, Ram, Scheduler, Timer, Result};
-use crate::core::cpu::{Cpu, Interrupts};
+use crate::core::cart::Cartridge;
+use crate::core::cpu::Cpu;
+use crate::core::io::Timer;
+use crate::core::mem::{Ram, Result, BusView};
 use crate::core::ppu::Ppu;
+use crate::core::sys::{Interrupts, Scheduler};
 
-
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub enum Model
-{
-    #[default]
-    Dmg,
-    Cgb,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Emulator
