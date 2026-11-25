@@ -53,4 +53,37 @@ impl Cpu {
         self.pc.get_hi();
         byte
     }
+
+    pub fn a(&self) -> u8 {
+        self.af.get_hi()
+    }
+
+    pub fn f(&self) -> u8 {
+        self.af.get_lo()
+    }
+
+    pub fn b(&self) -> u8 {
+        self.bc.get_hi()
+    }
+
+    pub fn c(&self) -> u8 {
+        self.bc.get_lo()
+    }
+    
+    pub fn d(&self) -> u8 {
+        self.de.get_hi()
+    }
+
+    pub fn e(&self) -> u8 {
+        self.de.get_lo()
+    }
+
+    pub fn h(&self) -> u8 {
+        self.hl.get_hi()
+    }
+
+    pub fn l(&self) -> u8 {
+        self.hl.get_lo()
+    }
+
 }
