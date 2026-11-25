@@ -1,4 +1,8 @@
-use crate::core::mem::{Oam, Vram};
+use crate::core::sys::{Irq, IrqSet};
+use crate::core::mem::{
+    OAM_BASE_ADDR, Oam,
+    VRAM_BASE_ADDR, Vram,
+};
 
 #[derive(Debug, Clone, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Ppu
@@ -10,7 +14,13 @@ pub struct Ppu
 
 impl Ppu
 {
-    pub fn new() -> Self { Default::default() }
+    pub fn new() -> Self {
+        Self {
+            vram: Vram::new(VRAM_BASE_ADDR),
+            oam:  Oam::new(OAM_BASE_ADDR),
+            ..Default::default()
+        }
+    }
 
     pub fn vram(&self) -> &Vram { &self.vram }
     pub fn vram_mut(&mut self) -> &mut Vram { &mut self.vram }
@@ -20,11 +30,12 @@ impl Ppu
 
     pub fn elapsed_dots(&self) -> u64 { self.elapsed_dots }
 
-    pub(crate) fn tick_dot(&mut self) {
+    pub(crate) fn tick(&mut self) -> IrqSet
+    {
         self.elapsed_dots = self
             .elapsed_dots
             .wrapping_add(1);
 
-        // TODO: advance rendering state machine.
+        IrqSet::EMPTY
     }
 }
