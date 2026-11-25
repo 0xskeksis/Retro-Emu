@@ -8,7 +8,10 @@
  * Every end offset is +1 to get the good size
  */
 
-use crate::core::mem::{Ram, Rom, Result, AddressError};
+use crate::core::mem::{Result, AddressError,
+    Ram,ERAM_BASE_ADDR,
+    Rom,ROM_BASE_ADDR, EROM_BASE_ADDR,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
 pub enum Model
@@ -114,7 +117,14 @@ pub enum CartridgeType {
 
 impl Cartridge
 {
-    pub fn new() -> Self { Default::default() }
+    pub fn new() -> Self {
+        Self {
+            rom: Rom::new(ROM_BASE_ADDR),
+            ext_rom: None,
+            ext_ram: None,
+            header: None,
+        }
+    }
 
     pub fn rom(&self) -> &Rom { &self.rom }
 

@@ -21,7 +21,16 @@ pub mod io
 pub mod mem
 {
     automod::dir!("src/core/mem");
-    pub use mem::{Memory, Ram, Rom, Vram, Oam, Result, AddressError, Hram};
+    pub use mem::{Memory, Result, AddressError,
+        Ram,  RAM_BASE_ADDR,  RAM_END_ADDR,
+        Rom,  ROM_BASE_ADDR,  ROM_END_ADDR,
+        Vram, VRAM_BASE_ADDR, VRAM_END_ADDR,
+        Oam,  OAM_BASE_ADDR,  OAM_END_ADDR,
+        Hram, HRAM_BASE_ADDR, HRAM_END_ADDR,
+        ERAM_BASE_ADDR, ERAM_END_ADDR,
+        EROM_BASE_ADDR, EROM_END_ADDR,
+        IO_BASE_ADDR, IO_END_ADDR,
+        INTERRUPT_IE_ADDR};
     pub use bus::{Bus, BusView};
 }
 pub mod sys

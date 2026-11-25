@@ -1,3 +1,5 @@
+use crate::core::sys::IrqSet;
+
 #[derive(Debug, Clone, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Scheduler
 {
@@ -13,17 +15,11 @@ impl Scheduler
     }
 
     /// Normal-speed scheduling only.
-    pub fn advance_tcycle(&mut self)
+    pub fn tick(&mut self) -> IrqSet
     {
         self.elapsed_tcycles = self
             .elapsed_tcycles
             .wrapping_add(1);
-    }
-
-    pub fn advance_mcycle(&mut self)
-    {
-        self.elapsed_tcycles = self
-            .elapsed_tcycles
-            .wrapping_add(4);
+        IrqSet::EMPTY
     }
 }

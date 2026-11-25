@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+use crate::core::sys::{Irq, IrqSet};
+
 //
 // ╔═════════════════════════[ DEFINITION ]═════════════════════════╗
 //
@@ -71,14 +73,16 @@ impl Clock
 
     /// Advances one CPU T-cycle.
     ///
-    /// Returns true if this tick requests the timer interrupt.
-    /// The scheduler must forward that request to IF.
-    pub fn tick_tcycle(&mut self) -> bool
+    /// Returns requested timer interrupt.
+    pub fn tick(&mut self) -> IrqSet
     {
-        let request_interrupt = self.reload.tick();
-        if request_interrupt { self.tima = self.tma; }
+        let mut raised = IrqSet::EMPTY;
+        if self.reload.tick() {
+            self.tima = self.tma; 
+            raised |= Irq::Timer;
+        }
         self.write_div(self.div.wrapping_add(1));
-        request_interrupt
+        raised
     }
 }
 
@@ -180,5 +184,5 @@ impl Clock
 
 
 #[cfg(test)]
-#[path = "../../../tests/timer.rs"]
-mod tests;
+#[path = "../../../tests/clock.rs"]
+mod clock;
