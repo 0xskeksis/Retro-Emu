@@ -8,12 +8,59 @@ pub struct Opcodes<B: Bus>(PhantomData<B>);
 
 impl<B: Bus> Opcodes<B> {
     pub const TABLE: [OpcodeHandler<B>; 256] = Self::build_table();
+    pub const CB_TABLE: [OpcodeHandler<B>; 256] = Self::build_cb_table();
 
     #[inline(always)]
     pub fn execute(cpu: &mut Cpu, bus: &mut B, opcode: u8) -> Result<()> {
         let table: &[OpcodeHandler<B>; 256] = &Self::TABLE;
         table[opcode as usize](cpu, bus, opcode)
     }
+
+const fn build_cb_table() -> [OpcodeHandler<B>; 256] {
+        let mut table = [illegal::<B> as OpcodeHandler<B>; 256];
+
+        // ---------------- 0x00 - 0x3F : rotates / shifts ----------------
+        table[0x00] = rlc; table[0x01] = rlc; table[0x02] = rlc; table[0x03] = rlc; table[0x04] = rlc; table[0x05] = rlc; table[0x06] = rlc; table[0x07] = rlc;
+        table[0x08] = rrc; table[0x09] = rrc; table[0x0A] = rrc; table[0x0B] = rrc; table[0x0C] = rrc; table[0x0D] = rrc; table[0x0E] = rrc; table[0x0F] = rrc;
+        table[0x10] = rl;  table[0x11] = rl;  table[0x12] = rl;  table[0x13] = rl;  table[0x14] = rl;  table[0x15] = rl;  table[0x16] = rl;  table[0x17] = rl;
+        table[0x18] = rr;  table[0x19] = rr;  table[0x1A] = rr;  table[0x1B] = rr;  table[0x1C] = rr;  table[0x1D] = rr;  table[0x1E] = rr;  table[0x1F] = rr;
+        table[0x20] = sla; table[0x21] = sla; table[0x22] = sla; table[0x23] = sla; table[0x24] = sla; table[0x25] = sla; table[0x26] = sla; table[0x27] = sla;
+        table[0x28] = sra; table[0x29] = sra; table[0x2A] = sra; table[0x2B] = sra; table[0x2C] = sra; table[0x2D] = sra; table[0x2E] = sra; table[0x2F] = sra;
+        table[0x30] = swap; table[0x31] = swap; table[0x32] = swap; table[0x33] = swap; table[0x34] = swap; table[0x35] = swap; table[0x36] = swap; table[0x37] = swap;
+        table[0x38] = srl; table[0x39] = srl; table[0x3A] = srl; table[0x3B] = srl; table[0x3C] = srl; table[0x3D] = srl; table[0x3E] = srl; table[0x3F] = srl;
+
+        // ---------------- 0x40 - 0x7F : BIT b,r ----------------
+        table[0x40] = bit_r; table[0x41] = bit_r; table[0x42] = bit_r; table[0x43] = bit_r; table[0x44] = bit_r; table[0x45] = bit_r; table[0x46] = bit_r; table[0x47] = bit_r;
+        table[0x48] = bit_r; table[0x49] = bit_r; table[0x4A] = bit_r; table[0x4B] = bit_r; table[0x4C] = bit_r; table[0x4D] = bit_r; table[0x4E] = bit_r; table[0x4F] = bit_r;
+        table[0x50] = bit_r; table[0x51] = bit_r; table[0x52] = bit_r; table[0x53] = bit_r; table[0x54] = bit_r; table[0x55] = bit_r; table[0x56] = bit_r; table[0x57] = bit_r;
+        table[0x58] = bit_r; table[0x59] = bit_r; table[0x5A] = bit_r; table[0x5B] = bit_r; table[0x5C] = bit_r; table[0x5D] = bit_r; table[0x5E] = bit_r; table[0x5F] = bit_r;
+        table[0x60] = bit_r; table[0x61] = bit_r; table[0x62] = bit_r; table[0x63] = bit_r; table[0x64] = bit_r; table[0x65] = bit_r; table[0x66] = bit_r; table[0x67] = bit_r;
+        table[0x68] = bit_r; table[0x69] = bit_r; table[0x6A] = bit_r; table[0x6B] = bit_r; table[0x6C] = bit_r; table[0x6D] = bit_r; table[0x6E] = bit_r; table[0x6F] = bit_r;
+        table[0x70] = bit_r; table[0x71] = bit_r; table[0x72] = bit_r; table[0x73] = bit_r; table[0x74] = bit_r; table[0x75] = bit_r; table[0x76] = bit_r; table[0x77] = bit_r;
+        table[0x78] = bit_r; table[0x79] = bit_r; table[0x7A] = bit_r; table[0x7B] = bit_r; table[0x7C] = bit_r; table[0x7D] = bit_r; table[0x7E] = bit_r; table[0x7F] = bit_r;
+
+        // ---------------- 0x80 - 0xBF : RES b,r ----------------
+        table[0x80] = res_r; table[0x81] = res_r; table[0x82] = res_r; table[0x83] = res_r; table[0x84] = res_r; table[0x85] = res_r; table[0x86] = res_r; table[0x87] = res_r;
+        table[0x88] = res_r; table[0x89] = res_r; table[0x8A] = res_r; table[0x8B] = res_r; table[0x8C] = res_r; table[0x8D] = res_r; table[0x8E] = res_r; table[0x8F] = res_r;
+        table[0x90] = res_r; table[0x91] = res_r; table[0x92] = res_r; table[0x93] = res_r; table[0x94] = res_r; table[0x95] = res_r; table[0x96] = res_r; table[0x97] = res_r;
+        table[0x98] = res_r; table[0x99] = res_r; table[0x9A] = res_r; table[0x9B] = res_r; table[0x9C] = res_r; table[0x9D] = res_r; table[0x9E] = res_r; table[0x9F] = res_r;
+        table[0xA0] = res_r; table[0xA1] = res_r; table[0xA2] = res_r; table[0xA3] = res_r; table[0xA4] = res_r; table[0xA5] = res_r; table[0xA6] = res_r; table[0xA7] = res_r;
+        table[0xA8] = res_r; table[0xA9] = res_r; table[0xAA] = res_r; table[0xAB] = res_r; table[0xAC] = res_r; table[0xAD] = res_r; table[0xAE] = res_r; table[0xAF] = res_r;
+        table[0xB0] = res_r; table[0xB1] = res_r; table[0xB2] = res_r; table[0xB3] = res_r; table[0xB4] = res_r; table[0xB5] = res_r; table[0xB6] = res_r; table[0xB7] = res_r;
+        table[0xB8] = res_r; table[0xB9] = res_r; table[0xBA] = res_r; table[0xBB] = res_r; table[0xBC] = res_r; table[0xBD] = res_r; table[0xBE] = res_r; table[0xBF] = res_r;
+
+        // ---------------- 0xC0 - 0xFF : SET b,r ----------------
+        table[0xC0] = set_r; table[0xC1] = set_r; table[0xC2] = set_r; table[0xC3] = set_r; table[0xC4] = set_r; table[0xC5] = set_r; table[0xC6] = set_r; table[0xC7] = set_r;
+        table[0xC8] = set_r; table[0xC9] = set_r; table[0xCA] = set_r; table[0xCB] = set_r; table[0xCC] = set_r; table[0xCD] = set_r; table[0xCE] = set_r; table[0xCF] = set_r;
+        table[0xD0] = set_r; table[0xD1] = set_r; table[0xD2] = set_r; table[0xD3] = set_r; table[0xD4] = set_r; table[0xD5] = set_r; table[0xD6] = set_r; table[0xD7] = set_r;
+        table[0xD8] = set_r; table[0xD9] = set_r; table[0xDA] = set_r; table[0xDB] = set_r; table[0xDC] = set_r; table[0xDD] = set_r; table[0xDE] = set_r; table[0xDF] = set_r;
+        table[0xE0] = set_r; table[0xE1] = set_r; table[0xE2] = set_r; table[0xE3] = set_r; table[0xE4] = set_r; table[0xE5] = set_r; table[0xE6] = set_r; table[0xE7] = set_r;
+        table[0xE8] = set_r; table[0xE9] = set_r; table[0xEA] = set_r; table[0xEB] = set_r; table[0xEC] = set_r; table[0xED] = set_r; table[0xEE] = set_r; table[0xEF] = set_r;
+        table[0xF0] = set_r; table[0xF1] = set_r; table[0xF2] = set_r; table[0xF3] = set_r; table[0xF4] = set_r; table[0xF5] = set_r; table[0xF6] = set_r; table[0xF7] = set_r;
+        table[0xF8] = set_r; table[0xF9] = set_r; table[0xFA] = set_r; table[0xFB] = set_r; table[0xFC] = set_r; table[0xFD] = set_r; table[0xFE] = set_r; table[0xFF] = set_r;
+
+        table
+}
 
 const fn build_table() -> [OpcodeHandler<B>; 256] {
     let mut table = [illegal::<B> as OpcodeHandler<B>; 256];
@@ -287,7 +334,7 @@ macro_rules! stubs {
 // TODO: When an instructions of stubs is coded, you have to remove it from the stubs!
 //
 stubs!(
-    halt, nop, stop, prefix_cb,
+    halt, nop, stop,
     rlca, rrca, rla, rra,
     ld_rr_d16, ld_indirect_rr_a, ld_a_indirect_rr, ld_a16_sp,
     inc_rr, dec_rr, inc_r8, dec_r8, ld_r8_d8, add_hl_rr,
@@ -299,6 +346,93 @@ stubs!(
     ldh_a8_a, ldh_a_a8, ld_c_a, ld_a_c, ld_a16_a, ld_a_a16,
     add_sp_r8, ld_hl_sp_r8, ld_sp_hl, di, ei,
 );
+
+fn prefix_cb<B: Bus>(cpu: &mut Cpu, bus: &mut B, _: u8) -> Result<()> {
+    let op = cpu.fetch(bus)?;
+    Opcodes::<B>::CB_TABLE[op as usize](cpu, bus, op)
+}
+
+fn do_rlc(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = v.rotate_left(1);
+    cpu.set_flags(r == 0, false, false, v & 0x80 != 0);
+    r
+}
+fn do_rrc(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = v.rotate_right(1);
+    cpu.set_flags(r == 0, false, false, v & 0x01 != 0);
+    r
+}
+fn do_rl(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = (v << 1) | cpu.cf() as u8;
+    cpu.set_flags(r == 0, false, false, v & 0x80 != 0);
+    r
+}
+fn do_rr(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = (v >> 1) | ((cpu.cf() as u8) << 7);
+    cpu.set_flags(r == 0, false, false, v & 0x01 != 0);
+    r
+}
+fn do_sla(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = v << 1;
+    cpu.set_flags(r == 0, false, false, v & 0x80 != 0);
+    r
+}
+fn do_sra(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = (v >> 1) | (v & 0x80); // bit 7 stays
+    cpu.set_flags(r == 0, false, false, v & 0x01 != 0);
+    r
+}
+fn do_swap(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = v.rotate_left(4);
+    cpu.set_flags(r == 0, false, false, false);
+    r
+}
+fn do_srl(cpu: &mut Cpu, v: u8) -> u8 {
+    let r = v >> 1;
+    cpu.set_flags(r == 0, false, false, v & 0x01 != 0);
+    r
+}
+
+/// Generates a handler: read r8 (bits 0-2), apply the operation, write back.
+macro_rules! cb_rot {
+    ($($name:ident => $op:ident),* $(,)?) => {
+        $(
+            fn $name<B: Bus>(cpu: &mut Cpu, bus: &mut B, op: u8) -> Result<()> {
+                let r = op & 0x07;
+                let v = read_r8(cpu, bus, r)?;
+                let res = $op(cpu, v);
+                write_r8(cpu, bus, r, res)
+            }
+        )*
+    };
+}
+
+//TODO: Same as stubs
+cb_rot!(
+    rlc => do_rlc, rrc => do_rrc, rl => do_rl, rr => do_rr,
+    sla => do_sla, sra => do_sra, swap => do_swap, srl => do_srl,
+);
+
+fn bit_r<B: Bus>(cpu: &mut Cpu, bus: &mut B, op: u8) -> Result<()> {
+    let v = read_r8(cpu, bus, op & 0x07)?;
+    let bit = (op >> 3) & 0x07;
+
+    let c = cpu.cf(); // carry untouched 
+    cpu.set_flags(v & (1 << bit) == 0, false, true, c);
+    Ok(()) // no write-back, so BIT (HL) costs one memory access less
+}
+
+fn res_r<B: Bus>(cpu: &mut Cpu, bus: &mut B, op: u8) -> Result<()> {
+    let r = op & 0x07;
+    let v = read_r8(cpu, bus, r)?;
+    write_r8(cpu, bus, r, v & !(1 << ((op >> 3) & 0x07)))
+}
+
+fn set_r<B: Bus>(cpu: &mut Cpu, bus: &mut B, op: u8) -> Result<()> {
+    let r = op & 0x07;
+    let v = read_r8(cpu, bus, r)?;
+    write_r8(cpu, bus, r, v | (1 << ((op >> 3) & 0x07)))
+}
 
 fn add_a(_: &mut Cpu, _: u8) {}
 fn adc_a(_: &mut Cpu, _: u8) {}

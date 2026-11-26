@@ -1,4 +1,4 @@
-use crate::core::cpu::Register;
+use crate::core::cpu::{Register, Flag};
 use crate::core::mem::{Bus, Result};
 use crate::core::cpu::ops::Opcodes;
 
@@ -33,7 +33,7 @@ impl Cpu {
         //     return;
         // }
         let opcode = self.fetch(bus)?;
-        Opcodes::<B>::execute(self, bus, opcode);
+        Opcodes::<B>::execute(self, bus, opcode)?;
         bus.advance_mcycle();
         Ok(())
     }
@@ -44,6 +44,33 @@ impl Cpu {
         self.pc.get_hi();
         byte
     }
+
+    #[inline(always)]
+    pub fn flag(&self, flag: Flag) -> bool {
+        self.af.get_flag(flag)
+    }
+
+    /// Set or clear one flag, leaving the others untouched.
+    #[inline(always)]
+    pub fn put_flag(&mut self, flag: Flag, value: bool) {
+        if value {
+            self.af.set_flag(flag);
+        } else {
+            self.af.clear_flag(flag);
+        }
+    }
+
+    /// Overwrite all four flags at once (low nibble of F stays 0).
+    #[inline(always)]
+    pub fn set_flags(&mut self, z: bool, n: bool, h: bool, c: bool) {
+        let f = ((z as u8) << 7) | ((n as u8) << 6) | ((h as u8) << 5) | ((c as u8) << 4);
+        self.af.set_lo(f);
+    }
+
+    #[inline(always)] pub fn zf(&self) -> bool { self.flag(Flag::Zero) }
+    #[inline(always)] pub fn nf(&self) -> bool { self.flag(Flag::Subtract) }
+    #[inline(always)] pub fn hf(&self) -> bool { self.flag(Flag::HalfCarry) }
+    #[inline(always)] pub fn cf(&self) -> bool { self.flag(Flag::Carry) }
 
     pub fn a(&self) -> u8 {
         self.af.get_hi()
@@ -76,5 +103,4 @@ impl Cpu {
     pub fn l(&self) -> u8 {
         self.hl.get_lo()
     }
-
 }
