@@ -33,16 +33,16 @@ pub trait Bus
     fn read(&mut self, addr: u16) -> Result<u8>;
     /// Memory write: costs 1 M-cycle (4 T-cycles)
     fn write(&mut self, addr: u16, val: u8) -> Result<()>;
-    /// Internal M-cycle with no memory access (e.g. the extra cycle in JP nn)
+    /// Internal M-cycle with no memory access, may raise interrupts
     fn advance_mcycle(&mut self);
-    /// Internal T-cycle with no memory access (e.g. the extra cycle in JP nn)
+    /// Internal T-cycle with no memory access, may raise interrupts
     fn advance_tcycle(&mut self);
     /// Request an interrupt
-    fn request_irq(&mut self, irq: impl Into<IrqSet>);
+    fn irq_request(&mut self, irq: impl Into<IrqSet>);
     /// Acknowledge an interrupt (clear the corresponding bit in IF)
-    fn acknowledge_irq(&mut self, irq: Irq);
+    fn irq_acknowledge(&mut self, irq: Irq);
     /// Check if an interrupt is pending (IF & IE != 0)
-    fn pending_irq(&self) -> Option<Irq>;
+    fn irq_pending(&self) -> Option<Irq>;
 }
 
 
@@ -61,33 +61,21 @@ impl Bus for BusView<'_>
         self.mapped_write(addr, val)
     }
 
-    fn advance_mcycle(&mut self) {
-        self.advance(4);
-    }
+    fn advance_mcycle(&mut self) { self.advance(4); }
+    fn advance_tcycle(&mut self) { self.advance(1); }
 
-    fn advance_tcycle(&mut self) {
-        self.advance(1);
-    }
-
-    fn request_irq(&mut self, irq: impl Into<IrqSet>) {
-        self.inter.request(irq);
-    }
-
-    fn acknowledge_irq(&mut self, irq: Irq) {
-        self.inter.acknowledge(irq);
-    }
-
-    fn pending_irq(&self) -> Option<Irq> {
-        self.inter.pending()
-    }
+    fn irq_request(&mut self, irq: impl Into<IrqSet>) { self.inter.request(irq); }
+    fn irq_acknowledge(&mut self, irq: Irq) { self.inter.acknowledge(irq); }
+    fn irq_pending(&self) -> Option<Irq> { self.inter.pending() }
 }
 
 impl BusView<'_>
 {
-    fn advance(&mut self, tcycles: u32) -> IrqSet {
-        let mut raised = IrqSet::EMPTY;
-        for _ in 0..tcycles { raised |= self.tick(); }
-        raised
+    fn advance(&mut self, tcycles: u32) {
+        (0..tcycles).for_each(|_| {
+            let raised = self.tick();
+            self.irq_request(raised);
+        });
     }
 
     fn tick(&mut self) -> IrqSet {

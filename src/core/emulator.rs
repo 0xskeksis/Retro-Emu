@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::time::{Duration, Instant};
 
 use crate::core::cart::Cartridge;
 use crate::core::cpu::Cpu;
@@ -10,6 +11,8 @@ use crate::core::mem::{BusView,
     HRAM_BASE_ADDR, Hram, RAM_BASE_ADDR, Ram, Result,
 };
 
+const FRAME_TCYCLES: u64 = 70_224;
+const FRAME_TIME: Duration = Duration::from_nanos(16_742_706); // 70224 / 4194304 s
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -45,13 +48,18 @@ impl Emulator
         // TODO:
     }
 
-    pub fn run() {
-        // TODO:
+    pub fn run(&mut self) -> Result<()>
+    {
+        let mut deadline = Instant::now();
+        loop {
+            (0..FRAME_TCYCLES).try_for_each(|_| self.step())?;
+            deadline = self.resync(deadline);
+        }
     }
 
-    fn step(&mut self) -> Result<()>
+    pub fn step(&mut self) -> Result<()>
     {
-        let mut bus = BusView {
+        self.cpu.step(&mut BusView {
             ppu:   &mut self.ppu,
             ram:   &mut self.ram,
             hram:  &mut self.hram,
@@ -59,7 +67,16 @@ impl Emulator
             clock: &mut self.clock,
             sched: &mut self.sched,
             inter: &mut self.inter,
-        };
-        self.cpu.step(&mut bus)
+        })
+    }
+
+    fn resync(&self, mut deadline:  Instant) -> Instant
+    {
+        deadline += FRAME_TIME;
+        match deadline.checked_duration_since(Instant::now())
+        {
+            Some(wait) => {std::thread::sleep(wait); deadline},
+            None => Instant::now(),
+        }
     }
 }
