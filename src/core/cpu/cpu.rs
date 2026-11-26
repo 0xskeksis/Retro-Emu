@@ -1,5 +1,6 @@
 use crate::core::cpu::Register;
 use crate::core::mem::{Bus, Result};
+use crate::core::cpu::ops::Opcodes;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct Cpu {
@@ -32,22 +33,12 @@ impl Cpu {
         //     return;
         // }
         let opcode = self.fetch(bus)?;
-        match opcode {
-            0x00 => {} // NOP: 1 M-cycle (the fetch)
-            0x77 => {} // LD (HL), A: 2 M-cycles (fetch + write)
-            0xC3 => {
-                // JP nn: 4 M-cycles (fetch, lo, hi, internal)
-                let lo = self.fetch(bus)?;
-                let hi = self.fetch(bus)?;
-                bus.advance_mcycle();
-                self.pc = u16::from_le_bytes([lo, hi]);
-            }
-            _ => unimplemented!("opcode {opcode:#04X}"),
-        };
+        Opcodes::<B>::execute(self, bus, opcode);
+        bus.advance_mcycle();
         Ok(())
     }
 
-    fn fetch<B: Bus>(&mut self, bus: &mut B) -> Result<u8> {
+    pub fn fetch<B: Bus>(&mut self, bus: &mut B) -> Result<u8> {
         let byte = bus.read(self.pc);
         self.pc = self.pc.wrapping_add(1);
         self.pc.get_hi();
