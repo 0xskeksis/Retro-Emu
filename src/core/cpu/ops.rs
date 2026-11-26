@@ -309,7 +309,7 @@ fn write_r8<B: Bus>(cpu: &mut Cpu, bus: &mut B, index: u8, value: u8) -> Result<
         3 => cpu.de.set_lo(value),
         4 => cpu.hl.set_hi(value),
         5 => cpu.hl.set_lo(value),
-        6 => return bus.write(cpu.hl, value),
+        6 => bus.write(cpu.hl, value)?,
         7 => cpu.af.set_hi(value),
         _ => unreachable!(),
     }
@@ -322,12 +322,22 @@ fn write_r8<B: Bus>(cpu: &mut Cpu, bus: &mut B, index: u8, value: u8) -> Result<
 
 fn illegal<B: Bus>(cpu: &mut Cpu, _: &mut B, op: u8) -> Result<()>
 {
-    panic!("illegal opcode {op:#04X} at PC={:#06X}", cpu.pc.wrapping_sub(1));
+    println!("illegal opcode {op:#04X} at PC={:#06X}", cpu.pc.wrapping_sub(1));
+    Ok(())
 }
 
 macro_rules! stubs {
     ($($name:ident),* $(,)?) => {
-        $( fn $name<B: Bus>(_: &mut Cpu, _: &mut B, _: u8) -> Result<()> { Ok(()) } )*
+        $(
+            fn $name<B: Bus>(cpu: &mut Cpu, _: &mut B, op: u8) -> Result<()> {
+                println!(
+                    "TODO: implement opcode {op:#04X} ({}) at PC={:#06X}",
+                    stringify!($name),
+                    cpu.pc.wrapping_sub(1)
+                );
+                Ok(())
+            }
+        )*
     };
 }
 
