@@ -16,8 +16,10 @@ pub mod cart
 pub mod io
 {
     automod::dir!("src/core/io");
-    pub use irq::{Irq, IrqSet, IrqCtrl};
-    pub use clock::Clock;
+    pub use device::IoDevice;
+    pub use io::IoReg;
+    pub use irq::{Irq, IrqSet, IrqCtrl, IrqReg};
+    pub use clock::{Clock, Register};
 }
 pub mod mem
 {

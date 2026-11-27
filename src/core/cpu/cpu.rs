@@ -34,7 +34,6 @@ impl Cpu {
         // }
         let opcode = self.fetch(bus)?;
         Opcodes::<B>::execute(self, bus, opcode)?;
-        bus.advance_mcycle();
         Ok(())
     }
 
