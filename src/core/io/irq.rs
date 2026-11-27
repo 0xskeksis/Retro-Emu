@@ -1,10 +1,37 @@
 //! Game Boy interrupt system.
 //!
+//! - `IrqReg`:  the two IO registers (IF, IE)
 //! - `Irq`:     a single interrupt source (VBlank, STAT, Timer, Serial, Joypad)
 //! - `IrqSet`:  a set of sources, the value stored in IF / IE
 //! - `IrqCtrl`: the hardware block holding IF (FF0F) and IE (FFFF)
 
 use std::ops::{BitAnd, BitOr, BitOrAssign};
+
+use crate::core::io::IoDevice;
+
+//
+// ╔═════════════════════════[ IrqReg : Io registers ]═════════════════════════╗
+//
+
+/// A IO register in the interrupt hardware block
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IrqReg {
+    If = 0xFF0F,
+    Ie,
+}
+
+impl TryFrom<u16> for IrqReg
+{
+    type Error = ();
+
+    fn try_from(addr: u16) -> Result<Self, ()> {
+        match addr {
+            0xFF0F => Ok(Self::If),
+            0xFFFF => Ok(Self::Ie),
+            _      => Err(()),
+        }
+    }
+}
 
 //
 // ╔═════════════════════════[ Irq : Single interrupt ]═════════════════════════╗
@@ -158,6 +185,26 @@ pub struct IrqCtrl
     ie:  IrqSet, // FFFF, enabled sources (all 8 bits stored)
 }
 
+impl IoDevice for IrqCtrl
+{
+    type Reg = IrqReg;
+
+    fn read(&self, reg: IrqReg) -> u8 {
+        match reg {
+            IrqReg::If => self.if_.bits() | 0xE0, // bits 5-7 always read as 1
+            IrqReg::Ie => self.ie.bits(),         // all 8 bits kept
+        }
+    }
+
+    fn write(&mut self, reg: IrqReg, v: u8) -> IrqSet {
+        match reg {
+            IrqReg::If => self.if_ = v.into(), // writing IF replaces the request
+            IrqReg::Ie => self.ie  = IrqSet::from_raw(v), // writing IE replaces the enable
+        }
+        IrqSet::EMPTY // writing IF *is* the request; nothing extra to raise
+    }
+}
+
 impl IrqCtrl
 {
     pub fn new() -> Self { Default::default() }
@@ -182,25 +229,12 @@ impl IrqCtrl
     pub fn acknowledge(&mut self, irq: Irq) {
         self.if_.remove(irq);
     }
-
-    // ---- Bus register access (game code): plain register semantics
-
-    /// FF0F read: bits 5-7 always read as 1
-    pub fn read_reg_if(&self) -> u8 { self.if_.bits() | 0xE0 }
-
-    /// FF0F write: replaces IF, so the game can request *or discard* interrupts
-    pub fn write_reg_if(&mut self, v: u8) { self.if_ = v.into(); }
-
-    /// FFFF read: all 8 bits read back as written
-    pub fn read_reg_ie(&self) -> u8 { self.ie.bits() }
-
-    /// FFFF write: replaces IE
-    pub fn write_reg_ie(&mut self, v: u8) { self.ie = IrqSet::from_raw(v); }
 }
 
-// ============================================================================
-// Tests
-// ============================================================================
+
+//
+// ╔═════════════════════════[ Tests ]═════════════════════════╗
+//
 
 #[cfg(test)]
 mod tests {
@@ -231,7 +265,7 @@ mod tests {
         ic.request(Irq::Timer);
         assert_eq!(ic.pending(), None);
 
-        ic.write_reg_ie(Irq::Timer.bit());
+        ic.write(IrqReg::Ie, Irq::Timer.bit());
         assert_eq!(ic.pending(), Some(Irq::Timer));
 
         ic.acknowledge(Irq::Timer);
@@ -241,20 +275,20 @@ mod tests {
     #[test]
     fn register_quirks() {
         let mut ic = IrqCtrl::default();
-        ic.write_reg_if(0xFF);
-        assert_eq!(ic.read_reg_if(), 0xFF); // bits 0-4 set, 5-7 forced to 1
-        ic.write_reg_if(0x00);
-        assert_eq!(ic.read_reg_if(), 0xE0);
+        ic.write(IrqReg::If, 0xFF);
+        assert_eq!(ic.read(IrqReg::If), 0xFF); // bits 0-4 set, 5-7 forced to 1
+        ic.write(IrqReg::If, 0x00);
+        assert_eq!(ic.read(IrqReg::If), 0xE0);
 
-        ic.write_reg_ie(0xFF);
-        assert_eq!(ic.read_reg_ie(), 0xFF); // IE keeps all 8 bits
+        ic.write(IrqReg::Ie, 0xFF);
+        assert_eq!(ic.read(IrqReg::Ie), 0xFF); // IE keeps all 8 bits
     }
 
     #[test]
     fn upper_ie_bits_never_trigger() {
         let mut ic = IrqCtrl::default();
-        ic.write_reg_ie(0xE0);
-        ic.write_reg_if(0xFF);
+        ic.write(IrqReg::Ie, 0xE0);
+        ic.write(IrqReg::If, 0xFF);
         assert_eq!(ic.pending(), None);
     }
 }
