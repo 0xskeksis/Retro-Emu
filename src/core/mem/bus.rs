@@ -130,15 +130,15 @@ impl BusView<'_>
     /// Address routing only: does not advance time.
     fn mapped_write(&mut self, addr: u16, val: u8) -> Result<()> {
         match addr {
-             ROM_BASE_ADDR  ..= ROM_END_ADDR  => Err(AddressError::ReadOnly(addr)),
-             EROM_BASE_ADDR ..= EROM_END_ADDR => self.ppu.vram_mut().write(addr, val),
-             VRAM_BASE_ADDR ..= VRAM_END_ADDR => self.cart.write_ext_ram(addr, val),
-             ERAM_BASE_ADDR ..= ERAM_END_ADDR => self.ram.write(addr, val),
-             RAM_BASE_ADDR  ..= RAM_END_ADDR  => self.ram.write(addr, val),
-             OAM_BASE_ADDR  ..= OAM_END_ADDR  => self.ppu.oam_mut().write(addr, val),
-             IO_BASE_ADDR   ..= IO_END_ADDR   => { self.io_write(addr, val); Ok(()) },
-             HRAM_BASE_ADDR ..= HRAM_END_ADDR => self.hram.write(addr, val),
-             INTERRUPT_IE_ADDR                => { self.io_write(addr, val); Ok(()) },
+            ROM_BASE_ADDR  ..= ROM_END_ADDR  => Err(AddressError::ReadOnly(addr)),
+            EROM_BASE_ADDR ..= EROM_END_ADDR => Err(AddressError::ReadOnly(addr)),
+            VRAM_BASE_ADDR ..= VRAM_END_ADDR => self.ppu.vram_mut().write(addr, val),
+            ERAM_BASE_ADDR ..= ERAM_END_ADDR => self.cart.write_ext_ram(addr, val),
+            RAM_BASE_ADDR  ..= RAM_END_ADDR  => self.ram.write(addr, val),
+            OAM_BASE_ADDR  ..= OAM_END_ADDR  => self.ppu.oam_mut().write(addr, val),
+            IO_BASE_ADDR   ..= IO_END_ADDR   => { self.io_write(addr, val); Ok(()) },
+            HRAM_BASE_ADDR ..= HRAM_END_ADDR => self.hram.write(addr, val),
+            INTERRUPT_IE_ADDR                => { self.io_write(addr, val); Ok(()) },
             _ => Err(AddressError::Invalid(addr)),
         }
     }
