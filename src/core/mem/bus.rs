@@ -93,7 +93,7 @@ impl BusView<'_>
             ERAM_BASE_ADDR ..= ERAM_END_ADDR => { self.cart.read_ext_ram(addr) },
             RAM_BASE_ADDR  ..= RAM_END_ADDR  => { self.ram.read(addr)          },
             OAM_BASE_ADDR  ..= OAM_END_ADDR  => { self.ppu.oam().read(addr)    },
-            IO_BASE_ADDR   ..= IO_END_ADDR   => {Err(AddressError::Other(addr))}, // TODO: I/O
+            IO_BASE_ADDR   ..= IO_END_ADDR   => {Err(AddressError::Other(addr))},
             HRAM_BASE_ADDR ..= HRAM_END_ADDR => { self.hram.read(addr)         },
             INTERRUPT_IE_ADDR                => { Ok(self.inter.read_reg_ie()) },
             _ => Err(AddressError::Invalid(addr)), // 0xFEA0..=0xFEFF & E000..=FDFF are unusable
@@ -103,15 +103,15 @@ impl BusView<'_>
     /// Address routing only: does not advance time.
     fn mapped_write(&mut self, addr: u16, val: u8) -> Result<()> {
         match addr {
-             ROM_BASE_ADDR  ..= ROM_END_ADDR  => { Err(AddressError::ReadOnly(addr))    },
-             EROM_BASE_ADDR ..= EROM_END_ADDR => { self.ppu.vram_mut().write(addr, val) },
-             VRAM_BASE_ADDR ..= VRAM_END_ADDR => { self.cart.write_ext_ram(addr, val)   },
-             ERAM_BASE_ADDR ..= ERAM_END_ADDR => { self.ram.write(addr, val)            },
-             RAM_BASE_ADDR  ..= RAM_END_ADDR  => { self.ram.write(addr, val)            },
-             OAM_BASE_ADDR  ..= OAM_END_ADDR  => { self.ppu.oam_mut().write(addr, val)  },
-             IO_BASE_ADDR   ..= IO_END_ADDR   => { Err(AddressError::Other(addr))       }, // TODO: I/O
-             HRAM_BASE_ADDR ..= HRAM_END_ADDR => { self.hram.write(addr, val)           },
-             INTERRUPT_IE_ADDR                => { self.inter.write_reg_ie(val); Ok(()) },
+            ROM_BASE_ADDR  ..= ROM_END_ADDR  => { Err(AddressError::ReadOnly(addr))    },
+            EROM_BASE_ADDR ..= EROM_END_ADDR => { Err(AddressError::ReadOnly(addr))    },
+            VRAM_BASE_ADDR ..= VRAM_END_ADDR => { self.ppu.vram_mut().write(addr, val) },
+            ERAM_BASE_ADDR ..= ERAM_END_ADDR => { self.cart.write_ext_ram(addr, val)   },
+            RAM_BASE_ADDR  ..= RAM_END_ADDR  => { self.ram.write(addr, val)            },
+            OAM_BASE_ADDR  ..= OAM_END_ADDR  => { self.ppu.oam_mut().write(addr, val)  },
+            IO_BASE_ADDR   ..= IO_END_ADDR   => { Err(AddressError::Other(addr))       }, // TODO: I/O
+            HRAM_BASE_ADDR ..= HRAM_END_ADDR => { self.hram.write(addr, val)           },
+            INTERRUPT_IE_ADDR                => { self.inter.write_reg_ie(val); Ok(()) },
             _ => Err(AddressError::Invalid(addr)),
         }
     }
