@@ -3,9 +3,9 @@ use std::time::{Duration, Instant};
 
 use crate::core::cart::Cartridge;
 use crate::core::cpu::Cpu;
-use crate::core::io::Clock;
+use crate::core::io::{IrqCtrl, Clock};
 use crate::core::ppu::Ppu;
-use crate::core::sys::{IrqCtrl, Scheduler};
+use crate::core::sys::Scheduler;
 
 use crate::core::mem::{BusView,
     HRAM_BASE_ADDR, Hram, RAM_BASE_ADDR, Ram, Result,

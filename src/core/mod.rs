@@ -16,6 +16,7 @@ pub mod cart
 pub mod io
 {
     automod::dir!("src/core/io");
+    pub use irq::{Irq, IrqSet, IrqCtrl};
     pub use clock::Clock;
 }
 pub mod mem
@@ -36,7 +37,6 @@ pub mod mem
 pub mod sys
 {
     automod::dir!("src/core/sys");
-    pub use irq::{Irq, IrqSet, IrqCtrl};
     pub use sched::Scheduler;
 }
 pub mod ppu {

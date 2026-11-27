@@ -1,4 +1,4 @@
-use crate::core::sys::{Irq, IrqSet};
+use crate::core::io::{Irq, IrqSet};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u16)]

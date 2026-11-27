@@ -1,4 +1,4 @@
-use crate::core::sys::{Irq, IrqSet};
+use crate::core::io::{Irq, IrqSet};
 use crate::core::mem::{
     OAM_BASE_ADDR, Oam,
     VRAM_BASE_ADDR, Vram,

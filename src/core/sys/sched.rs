@@ -1,4 +1,4 @@
-use crate::core::sys::IrqSet;
+use crate::core::io::IrqSet;
 
 #[derive(Debug, Clone, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Scheduler

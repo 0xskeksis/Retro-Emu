@@ -9,10 +9,10 @@ use crate::core::mem::{AddressError, Result,
     EROM_BASE_ADDR, EROM_END_ADDR,
     INTERRUPT_IE_ADDR
 };
-use crate::core::sys::{Irq, IrqSet, Scheduler};
+use crate::core::io::{Irq, IrqSet, IrqCtrl};
 use crate::core::ppu::Ppu;
 use crate::core::cart::Cartridge;
-use crate::core::sys::IrqCtrl;
+use crate::core::sys::Scheduler;
 use crate::core::io::Clock;
 
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
