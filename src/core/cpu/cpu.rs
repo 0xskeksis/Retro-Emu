@@ -2,6 +2,7 @@ use crate::core::cpu::{Register, Flag};
 use crate::core::mem::{Bus, Result};
 use crate::core::cpu::ops::Opcodes;
 
+
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct Cpu {
     pub af: u16,
@@ -15,7 +16,11 @@ pub struct Cpu {
 
 impl Cpu {
     pub fn new() -> Self {
-        Default::default()
+        Self {
+            pc: 0x150,
+            ..Default::default()
+        }
+
     }
 
     /*

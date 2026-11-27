@@ -13,5 +13,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     let mut emulator = Emulator::new();
-    Ok(emulator.step()?)
+    let arguments: Vec<String> = env::args().collect();
+    emulator.load(&arguments[1]);
+    loop{
+        emulator.step()?
+    }
 }

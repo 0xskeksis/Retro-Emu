@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::fs;
 use std::time::{Duration, Instant};
 
 use crate::core::cart::Cartridge;
@@ -44,8 +45,9 @@ impl Emulator
         }
     }
 
-    pub fn load<P: AsRef<Path>>(path: &P) {
-        // TODO:
+    pub fn load<P: AsRef<Path>>(&mut self, path: &P) {
+        let data: Vec<u8> = fs::read(path).unwrap();
+        self.cart.load(data);
     }
 
     pub fn run(&mut self) -> Result<()>
